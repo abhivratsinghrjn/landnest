@@ -12,7 +12,7 @@ export default function Contact() {
             <div className="flex flex-col md:flex-row gap-8">
               <div className="md:w-1/3">
                 <img
-                  src="/abhivrat-singh.png"
+                  src="/abhivrat-singh.jpg"
                   alt="Abhivrat Singh"
                   className="w-full h-auto object-cover rounded-lg"
                 />
