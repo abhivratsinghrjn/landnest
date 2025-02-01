@@ -45,7 +45,7 @@ export default function Footer() {
             <h3 className="text-white text-lg font-semibold mb-4">Connect With Us</h3>
             <div className="flex space-x-4">
               <a 
-                href="https://www.facebook.com/abhivrat.singh.39"
+                href="https://www.facebook.com/people/LandNest-Properties/61571537133705/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-blue-400"
@@ -61,7 +61,7 @@ export default function Footer() {
                 <Instagram className="h-5 w-5" />
               </a>
               <a 
-                href="https://in.linkedin.com/in/abhivrat-singh-681208279"
+                href="https://www.linkedin.com/company/landnest-properties/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-blue-400"
