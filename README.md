@@ -3,7 +3,6 @@
 [![Repo size](https://img.shields.io/github/repo-size/abhivratsinghrjn/landnest)]()
 [![Language](https://img.shields.io/github/languages/top/abhivratsinghrjn/landnest)]()
 [![License](https://img.shields.io/github/license/abhivratsinghrjn/landnest)]()
-[![Netlify Status](https://api.netlify.com/api/v1/badges/REPLACE_WITH_YOUR_NETLIFY_BADGE/deploy-status)]()
 
 > A simple, responsive real-estate listing front-end built with TypeScript, Vite and Tailwind CSS.
 
@@ -18,7 +17,6 @@
 - [About](#about)
 - [Features](#features)
 - [Tech stack](#tech-stack)
-- [Screenshots](#screenshots)
 - [Setup / Local development](#setup--local-development)
 - [How to add pages / components](#how-to-add-pages--components)
 - [Deploying](#deploying)
