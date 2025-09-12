@@ -50,13 +50,7 @@ LandNest is a clean, mobile-first front-end for listing properties (plots, resid
 
 ---
 
-## Screenshots
-_Add screenshots to `/assets/screenshots/` and reference them below:_
 
-![Homepage screenshot](assets/screenshots/home.png)
-![Property view screenshot](assets/screenshots/property.png)
-
----
 
 ## Setup — local development
 
