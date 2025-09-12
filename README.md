@@ -10,7 +10,7 @@
 ---
 
 ## Demo
-[[**Live site:** _[(https://landnest.in/)]
+**Live site:** _(https://landnest.in/)
 
 ---
 
