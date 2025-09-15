@@ -4,10 +4,6 @@ import { motion } from 'framer-motion';
 
 export default function Contact() {
   const socialLinks = [
-    { icon: Instagram, href: "https://www.instagram.com/abhivrat_singh/", label: "Instagram" },
-    { icon: Facebook, href: "https://www.facebook.com/abhivrat.singh.39", label: "Facebook" },
-    { icon: Linkedin, href: "https://in.linkedin.com/in/abhivrat-singh-681208279", label: "LinkedIn" },
-    { icon: ExternalLink, href: "https://linktr.ee/abhivrat", label: "Linktree" }
   ];
 
   return (
@@ -60,10 +56,7 @@ export default function Contact() {
                   transition={{ duration: 0.5, delay: 0.7 }}
                 >
                   With over 5 years of experience in real estate and a strong family business 
-                  background, Abhivrat Singh has established LandNest as a trusted name in 
-                  Rajnandgaon's property market. His deep understanding of local real estate 
-                  and commitment to customer satisfaction has helped numerous families find 
-                  their perfect homes.
+                  background.
                 </motion.p>
 
                 <motion.div 
@@ -73,13 +66,13 @@ export default function Contact() {
                   transition={{ duration: 0.5, delay: 0.8 }}
                 >
                   <motion.a
-                    href="tel:+916261642203"
+                    href="tel:"
                     className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     <Phone className="h-5 w-5 mr-3" />
-                    +91 6261642203
+                 
                   </motion.a>
 
                   <motion.a
@@ -89,7 +82,7 @@ export default function Contact() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <Mail className="h-5 w-5 mr-3" />
-                    businesswithabhivrat@gmail.com
+                 
                   </motion.a>
                 </motion.div>
 
