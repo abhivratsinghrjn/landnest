@@ -33,8 +33,8 @@ export default function Contact() {
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
                 <img
-                  src="/abhivrat-singh.jpg"
-                  alt="Abhivrat Singh"
+                  src="/property.jpg"
+                  alt="Landnest Properties"
                   className="w-full h-auto object-cover rounded-lg"
                 />
               </motion.div>
