@@ -1,5 +1,5 @@
 import { Layout } from "@/components/Layout";
-import founderImage from "@assets/generated_images/professional_portrait_of_a_male_founder.png";
+import founderImage from "@assets/abhivrat_singh_founder.jpg";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
