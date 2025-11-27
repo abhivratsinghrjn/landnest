@@ -1,0 +1,174 @@
+Build a complete full-stack real estate web application named LandNest Properties.
+The website should allow users to sign up, log in, list properties for sale or rent, manage their profiles, upload images, and pin each property's location using MapTiler Cloud.
+Follow every instruction exactly.
+
+PROJECT REQUIREMENTS:
+
+Use a modern full-stack framework (Next.js, React + Express, MERN, or similar).
+
+Create a responsive, modern, animated UI.
+
+Integrate MapTiler Cloud maps for all property locations.
+
+MapTiler API key to use:
+https://api.maptiler.com/maps/outdoor-v4/?key=CYUJDmOE8Pn0VA43IzX8#14.4/21.09762/81.02659
+
+Each property must allow the user to drop a map pin for its location.
+On property details pages:
+Left side: Title, images, details.
+Right side: Map with exact pinned location.
+
+PAGES AND FEATURES TO BUILD:
+
+Landing Page
+
+Top left: LandNest logo and favicon
+
+Top right menu: For Sale, For Rent, Farms, About Us, Contact, Login, Sign Up
+
+Featured properties section
+
+Search properties by location panel at bottom
+
+Testimonials section
+
+Animated hover effects on property cards
+
+When clicking any menu button, show a small buffering animation
+
+Fully mobile responsive with a hamburger menu that animates open
+
+Home Page (after login)
+
+Recently listed properties
+
+Filters for For Sale, For Rent, Farms
+
+Map preview on each property card
+
+For Sale Page
+
+Shows properties classified as land or homes for sale
+
+For Rent Page
+
+Shows rental properties including residential and commercial
+
+Farms Page
+
+Only farm listings
+
+About Us Page
+
+Story and legacy of LandNest
+
+Information about the founder: Abhivrat Singh
+
+A note that the website was created for the family business
+
+Contact Page
+
+Left side: placeholder for Abhivrat Singh's photo
+
+Right side:
+Name: Abhivrat Singh
+Phone: 6261642203
+Email: businesswithabhivrat@gmail.com
+
+Short biography text
+
+Login and Signup Pages
+Signup must require:
+
+Name
+
+Phone number
+
+Email
+
+Password
+
+Photo upload (required)
+
+User Dashboard (My Profile)
+
+User can edit profile
+
+See "My Listings"
+
+Add, remove, or mark listings as sold
+
+Add Property Page
+Required fields:
+
+For Sale or For Rent
+
+Residential or Commercial or Farm
+
+House or Plot
+
+Area in square meters
+
+If farm: area in acres
+
+Plot dimensions in feet
+
+If house: number of bedrooms
+
+Property name
+
+Full description
+
+Map location pinning feature
+
+Minimum 3 property images (upload required)
+
+UI AND UX REQUIREMENTS:
+
+Clean, modern, minimal design
+
+Subtle animations on hover
+
+Animated transitions when navigating pages
+
+Fully mobile optimized
+
+FOOTER CONTENT:
+
+About LandNest
+Find Your Nest, Invest the Best. Your trusted partner in real estate across Rajnandgaon, Chhattisgarh.
+
+Quick Links:
+Properties for Sale
+Rental Properties
+About Us
+Contact Us
+
+Connect With Us:
+Instagram placeholder link
+Facebook placeholder link
+LinkedIn placeholder link
+
+BACKEND REQUIREMENTS:
+
+User authentication (signup, login, JWT sessions or similar)
+
+Database for users and listings
+
+Image uploads for property images
+
+Save map coordinates (latitude and longitude)
+
+CRUD operations for property listings
+
+FINAL DELIVERY EXPECTED FROM REPLIT AI:
+A complete full-stack codebase with:
+Frontend
+Backend
+Database schema
+API routes
+Authentication system
+Property CRUD system
+Map integration
+Responsive UI
+All pages fully functional
