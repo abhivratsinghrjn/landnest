@@ -4,30 +4,10 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import multer from "multer";
-import path from "path";
 import { insertPropertySchema } from "@shared/schema";
+import { avatarStorage, propertyStorage } from "./cloudinary";
 
-// Configure multer for file uploads
-const avatarStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/avatars');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'avatar-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const propertyStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/properties');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'property-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// Configure multer with Cloudinary storage
 const uploadAvatar = multer({ 
   storage: avatarStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
@@ -66,9 +46,6 @@ export async function registerRoutes(
   // Setup authentication routes: /api/register, /api/login, /api/logout, /api/user
   setupAuth(app);
 
-  // Serve uploaded files statically
-  app.use('/uploads', express.static('uploads'));
-
   // === USER ROUTES ===
   
   // Update user profile
@@ -96,7 +73,8 @@ export async function registerRoutes(
       }
       
       const userId = req.user!.id;
-      const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+      // Cloudinary returns the URL in req.file.path
+      const avatarUrl = (req.file as any).path;
       
       const updatedUser = await storage.updateUser(userId, { avatarUrl });
       res.json({ avatarUrl: updatedUser?.avatarUrl });
@@ -161,9 +139,9 @@ export async function registerRoutes(
       // Create property
       const property = await storage.createProperty(userId, validatedData);
       
-      // Add images if uploaded
+      // Add images if uploaded (Cloudinary returns URLs in file.path)
       if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-        const imageUrls = req.files.map(file => `/uploads/properties/${file.filename}`);
+        const imageUrls = req.files.map((file: any) => file.path);
         await storage.addPropertyImages(property.id, imageUrls);
       }
       

@@ -1,24 +1,30 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Search, ArrowRight, CheckCircle2, MapPin } from "lucide-react";
+import { Search, ArrowRight, CheckCircle2, MapPin, Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { Layout } from "@/components/Layout";
 import { PropertyCard } from "@/components/PropertyCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockProperties } from "@/lib/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { getProperties } from "@/lib/api";
 import heroImage from "@assets/generated_images/modern_luxury_home_exterior_with_garden.png";
 
 export default function Landing() {
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useLocation();
 
+  const { data: allProperties = [], isLoading } = useQuery({
+    queryKey: ["/api/properties"],
+    queryFn: () => getProperties(),
+  });
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setLocation(`/properties?search=${encodeURIComponent(searchQuery)}`);
   };
 
-  const featuredProperties = mockProperties.filter(p => p.featured).slice(0, 3);
+  const featuredProperties = allProperties.filter((p: any) => p.featured).slice(0, 3);
 
   return (
     <Layout>
@@ -95,19 +101,29 @@ export default function Landing() {
             </Button>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {featuredProperties.map((property, index) => (
-              <motion.div
-                key={property.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <PropertyCard property={property} />
-              </motion.div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : featuredProperties.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {featuredProperties.map((property: any, index: number) => (
+                <motion.div
+                  key={property.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <PropertyCard property={property} />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No featured properties yet. Check back soon!</p>
+            </div>
+          )}
         </div>
       </section>
 

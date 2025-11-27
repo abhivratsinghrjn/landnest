@@ -13,6 +13,7 @@ import Contact from "@/pages/Contact";
 import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import AddProperty from "@/pages/AddProperty";
+import ForgotPassword from "@/pages/ForgotPassword";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/auth" component={Auth} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/add-property" component={AddProperty} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route component={NotFound} />
     </Switch>
   );

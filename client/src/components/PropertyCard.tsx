@@ -1,27 +1,31 @@
 import { motion } from "framer-motion";
 import { MapPin, Bed, Maximize, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
-import { Property } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 
 interface PropertyCardProps {
-  property: Property;
+  property: any;
 }
 
 export function PropertyCard({ property }: PropertyCardProps) {
+  const handleClick = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      whileHover={{ y: -8 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="group relative bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-border/50 transition-all duration-300 flex flex-col h-full"
-    >
-      {/* Image Container */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+    <Link href={`/property/${property.id}`} onClick={handleClick}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        whileHover={{ y: -8 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        className="group relative bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-xl border border-border/50 transition-all duration-300 flex flex-col h-full cursor-pointer"
+      >
+        {/* Image Container */}
+        <div className="relative aspect-[4/3] overflow-hidden">
         <motion.img
-          src={property.images[0]}
+          src={property.images && property.images.length > 0 ? property.images[0].imageUrl : 'https://via.placeholder.com/400x300?text=No+Image'}
           alt={property.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
@@ -78,17 +82,16 @@ export function PropertyCard({ property }: PropertyCardProps) {
         </div>
 
         <div className="mt-auto">
-          <Link href={`/property/${property.id}`}>
-            <Button className="w-full group-hover:bg-primary group-hover:text-white transition-all" variant="outline">
-              View Details
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
+          <Button className="w-full group-hover:bg-primary group-hover:text-white transition-all" variant="outline">
+            View Details
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Button>
         </div>
       </div>
       
       {/* Map Preview (Mini) - Visual Only for Card */}
       <div className="h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
     </motion.div>
+    </Link>
   );
 }

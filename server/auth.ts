@@ -81,6 +81,11 @@ export function setupAuth(app: Express) {
         password: await hashPassword(req.body.password),
       });
 
+      // Send welcome email (don't wait for it)
+      import("./email").then(({ sendWelcomeEmail }) => {
+        sendWelcomeEmail(user.email, user.name).catch(console.error);
+      });
+
       req.login(user, (err) => {
         if (err) return next(err);
         res.status(201).json(user);
@@ -104,5 +109,32 @@ export function setupAuth(app: Express) {
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     res.json(req.user);
+  });
+
+  // Password reset request
+  app.post("/api/forgot-password", async (req, res, next) => {
+    try {
+      const { email } = req.body;
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        // Don't reveal if email exists
+        return res.json({ message: "If that email exists, a reset link has been sent." });
+      }
+
+      // Generate reset token (simple implementation - in production use crypto)
+      const resetToken = Buffer.from(`${user.id}:${Date.now()}`).toString('base64');
+      
+      // Store token in session or database (simplified here)
+      // In production, store in database with expiry
+      
+      // Send reset email
+      const { sendPasswordResetEmail } = await import("./email");
+      await sendPasswordResetEmail(user.email, user.name, resetToken);
+      
+      res.json({ message: "If that email exists, a reset link has been sent." });
+    } catch (error) {
+      next(error);
+    }
   });
 }

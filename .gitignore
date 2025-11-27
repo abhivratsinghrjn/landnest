@@ -1,6 +1,34 @@
+# Dependencies
 node_modules
 dist
 .DS_Store
+
+# Environment variables (IMPORTANT - keeps secrets safe)
+.env
+.env.local
+.env.production
+
+# Build outputs
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor directories
+.vscode
+.idea
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Uploads (images are in Cloudinary, not needed in repo)
+uploads/
+
+# Temporary files
+*.tmp
+*.temp
+.cache

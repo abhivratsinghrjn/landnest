@@ -100,7 +100,9 @@ export default function Auth() {
                   </form>
                 </CardContent>
                 <CardFooter className="justify-center">
-                  <Button variant="link" className="text-sm text-muted-foreground">Forgot your password?</Button>
+                  <Link href="/forgot-password">
+                    <Button variant="link" className="text-sm text-muted-foreground">Forgot your password?</Button>
+                  </Link>
                 </CardFooter>
               </Card>
             </TabsContent>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
-import { Menu, X, Home, MapPin, Phone, User, LogIn, PlusCircle } from "lucide-react";
+import { useLocation } from "wouter";
+import { Menu, X, User, PlusCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import logoImage from "@assets/generated_images/minimalist_real_estate_logo_icon.png";
 import { Button } from "@/components/ui/button";
@@ -29,17 +29,25 @@ export function Layout({ children }: LayoutProps) {
   }, []);
 
   useEffect(() => {
-    // Close mobile menu on route change
+    // Close mobile menu on route change and scroll to top smoothly
     setIsMobileMenuOpen(false);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location]);
 
   const handleNavClick = (path: string) => {
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+    
+    // Scroll to top immediately
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     // Simulate buffering animation
     toast({
       description: "Loading...",
       duration: 500,
     });
+    
+    // Navigate after brief delay
     setTimeout(() => {
       setLocation(path);
     }, 300);
@@ -156,18 +164,41 @@ export function Layout({ children }: LayoutProps) {
               <button
                 key={link.name}
                 onClick={() => handleNavClick(link.path)}
-                className="text-2xl font-display font-medium text-left border-b border-border pb-2"
+                className="text-2xl font-display font-medium text-left border-b border-border pb-2 hover:text-primary transition-colors"
               >
                 {link.name}
               </button>
             ))}
+            
             <div className="flex flex-col gap-4 mt-4">
-              <Button onClick={() => handleNavClick("/auth?mode=login")} variant="outline" className="w-full py-6 text-lg">
-                Log In
-              </Button>
-              <Button onClick={() => handleNavClick("/auth?mode=signup")} className="w-full py-6 text-lg bg-primary text-white">
-                Sign Up
-              </Button>
+              {isLoggedIn ? (
+                <>
+                  <Button 
+                    onClick={() => handleNavClick("/add-property")} 
+                    className="w-full py-6 text-lg bg-primary text-white gap-2"
+                  >
+                    <PlusCircle className="h-5 w-5" />
+                    List Property
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavClick("/dashboard")} 
+                    variant="outline" 
+                    className="w-full py-6 text-lg gap-2"
+                  >
+                    <User className="h-5 w-5" />
+                    My Dashboard
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button onClick={() => handleNavClick("/auth?mode=login")} variant="outline" className="w-full py-6 text-lg">
+                    Log In
+                  </Button>
+                  <Button onClick={() => handleNavClick("/auth?mode=signup")} className="w-full py-6 text-lg bg-primary text-white">
+                    Sign Up
+                  </Button>
+                </>
+              )}
             </div>
           </motion.div>
         )}
@@ -215,15 +246,30 @@ export function Layout({ children }: LayoutProps) {
           <div>
             <h3 className="font-display font-semibold text-xl mb-6">Connect With Us</h3>
             <div className="flex gap-4">
-              <a href="#" className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-colors">
+              <a 
+                href="https://www.instagram.com/abhivrat_singh/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-colors"
+              >
                 <span className="sr-only">Instagram</span>
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772 4.902 4.902 0 011.772-1.153c.636-.247 1.363-.416 2.427-.465C9.673 2.013 10.03 2 12.315 2zm-3.196 8.45a4.45 4.45 0 100 8.9 4.45 4.45 0 000-8.9zm0 1.524a2.926 2.926 0 110 5.852 2.926 2.926 0 010-5.852zM16.57 6.46a1.12 1.12 0 100 2.24 1.12 1.12 0 000-2.24z" clipRule="evenodd" /></svg>
               </a>
-              <a href="#" className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-colors">
+              <a 
+                href="https://www.facebook.com/people/LandNest-Properties/61571537133705/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-colors"
+              >
                 <span className="sr-only">Facebook</span>
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>
               </a>
-              <a href="#" className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-colors">
+              <a 
+                href="https://www.linkedin.com/company/landnest-properties/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="bg-white/10 p-3 rounded-full hover:bg-white/20 transition-colors"
+              >
                  <span className="sr-only">LinkedIn</span>
                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clipRule="evenodd" /></svg>
               </a>

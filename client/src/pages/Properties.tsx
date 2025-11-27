@@ -1,11 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Layout } from "@/components/Layout";
 import { PropertyCard } from "@/components/PropertyCard";
-import { mockProperties } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getProperties } from "@/lib/api";
 
 export default function Properties() {
   const [location] = useLocation();
@@ -16,14 +17,13 @@ export default function Properties() {
   const [activeFilter, setActiveFilter] = useState(typeFilter);
   const [localSearch, setLocalSearch] = useState(searchQuery);
 
-  const filteredProperties = useMemo(() => {
-    return mockProperties.filter((p) => {
-      const matchesType = activeFilter === "all" || p.type === activeFilter || (activeFilter === 'farm' && p.category === 'farm');
-      const matchesSearch = p.location.toLowerCase().includes(localSearch.toLowerCase()) || 
-                            p.title.toLowerCase().includes(localSearch.toLowerCase());
-      return matchesType && matchesSearch;
-    });
-  }, [activeFilter, localSearch]);
+  const { data: properties = [], isLoading } = useQuery({
+    queryKey: ["/api/properties", activeFilter, localSearch],
+    queryFn: () => getProperties({
+      type: activeFilter !== "all" ? activeFilter : undefined,
+      search: localSearch || undefined,
+    }),
+  });
 
   const filters = [
     { id: "all", label: "All Properties" },
@@ -75,9 +75,13 @@ export default function Properties() {
         </div>
 
         {/* Grid */}
-        {filteredProperties.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProperties.map((property) => (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : properties.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {properties.map((property: any) => (
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>
