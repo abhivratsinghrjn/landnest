@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import serverless from 'serverless-http';
 import express from 'express';
 import { registerRoutes } from '../../server/routes';
@@ -5,6 +6,12 @@ import { setupAuth } from '../../server/auth';
 import session from 'express-session';
 import passport from 'passport';
 import { storage } from '../../server/storage';
+
+// Verify environment variables are loaded
+if (!process.env.DATABASE_URL) {
+  console.error('DATABASE_URL is not set!');
+  throw new Error('DATABASE_URL must be set. Check Netlify environment variables.');
+}
 
 const app = express();
 

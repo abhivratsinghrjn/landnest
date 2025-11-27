@@ -18,4 +18,8 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["express"]
+  external_node_modules = ["express", "@neondatabase/serverless", "ws"]
+  included_files = ["server/**", "shared/**"]
+
+[functions.server]
+  node_bundler = "esbuild"
