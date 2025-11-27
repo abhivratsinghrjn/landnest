@@ -32,3 +32,6 @@ uploads/
 *.tmp
 *.temp
 .cache
+node_modules/
+.env
+dist/
