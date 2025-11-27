@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import logoImage from "@assets/generated_images/minimalist_real_estate_logo_icon.png";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,9 +16,9 @@ export function Layout({ children }: LayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  // Mock Auth State (toggle this to see logged in state)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = !!user;
 
   useEffect(() => {
     const handleScroll = () => {

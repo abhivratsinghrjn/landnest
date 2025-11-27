@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
@@ -66,7 +67,7 @@ export async function registerRoutes(
   setupAuth(app);
 
   // Serve uploaded files statically
-  app.use('/uploads', require('express').static('uploads'));
+  app.use('/uploads', express.static('uploads'));
 
   // === USER ROUTES ===
   

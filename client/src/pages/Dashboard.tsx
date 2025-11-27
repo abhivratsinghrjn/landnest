@@ -1,17 +1,39 @@
 import { Layout } from "@/components/Layout";
-import { mockUser, mockProperties } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PropertyCard } from "@/components/PropertyCard";
-import { PlusCircle, Settings, LogOut, Trash2, Edit } from "lucide-react";
+import { PlusCircle, Settings, LogOut, Trash2, Edit, Loader2 } from "lucide-react";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProperties } from "@/lib/api";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
-  // Filter properties that belong to this user (mock implementation)
-  const myListings = mockProperties.slice(0, 2); // Just taking first 2 as "mine" for demo
+  const { user, logoutMutation } = useAuth();
+  
+  useEffect(() => {
+    if (!user) {
+      setLocation("/auth");
+    }
+  }, [user, setLocation]);
+  
+  const { data: myListings = [], isLoading } = useQuery({
+    queryKey: ["/api/user/properties"],
+    queryFn: getUserProperties,
+    enabled: !!user,
+  });
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => setLocation("/"),
+    });
+  };
+
+  if (!user) return null;
 
   return (
     <Layout>
@@ -21,10 +43,16 @@ export default function Dashboard() {
           <div className="w-full md:w-64 space-y-6">
             <div className="bg-card p-6 rounded-xl border border-border text-center">
               <div className="w-24 h-24 rounded-full bg-muted mx-auto mb-4 overflow-hidden">
-                <img src={mockUser.avatar} alt={mockUser.name} className="w-full h-full object-cover" />
+                {user.avatarUrl ? (
+                  <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-primary/10 text-primary font-bold text-2xl">
+                    {user.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
               </div>
-              <h2 className="font-bold text-xl">{mockUser.name}</h2>
-              <p className="text-sm text-muted-foreground mb-4">{mockUser.email}</p>
+              <h2 className="font-bold text-xl">{user.name}</h2>
+              <p className="text-sm text-muted-foreground mb-4">{user.email}</p>
               <Button variant="outline" size="sm" className="w-full gap-2">
                 <Settings className="h-4 w-4" /> Edit Profile
               </Button>
@@ -34,10 +62,11 @@ export default function Dashboard() {
               <Button 
                 className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50" 
                 variant="ghost"
-                onClick={() => setLocation("/")}
+                onClick={handleLogout}
+                disabled={logoutMutation.isPending}
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                Log Out
+                {logoutMutation.isPending ? "Logging out..." : "Log Out"}
               </Button>
             </div>
           </div>
@@ -59,9 +88,13 @@ export default function Dashboard() {
               </TabsList>
 
               <TabsContent value="listings" className="space-y-6">
-                {myListings.length > 0 ? (
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : myListings.length > 0 ? (
                   <div className="grid md:grid-cols-2 gap-6">
-                    {myListings.map((property) => (
+                    {myListings.map((property: any) => (
                       <div key={property.id} className="relative group">
                         <PropertyCard property={property} />
                         <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -90,16 +123,16 @@ export default function Dashboard() {
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label>Full Name</Label>
-                        <Input defaultValue={mockUser.name} />
+                        <Input defaultValue={user.name} />
                       </div>
                       <div className="space-y-2">
                         <Label>Phone</Label>
-                        <Input defaultValue={mockUser.phone} />
+                        <Input defaultValue={user.phone} />
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Email</Label>
-                      <Input defaultValue={mockUser.email} disabled />
+                      <Input defaultValue={user.email} disabled />
                     </div>
                     <Button type="submit" className="bg-primary text-white">Save Changes</Button>
                   </form>

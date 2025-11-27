@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -8,23 +8,40 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Camera, ArrowLeft } from "lucide-react";
 import logoImage from "@assets/generated_images/minimalist_real_estate_logo_icon.png";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Auth() {
   const [location, setLocation] = useLocation();
   const searchParams = new URLSearchParams(window.location.search);
   const mode = searchParams.get("mode") || "login";
   const [activeTab, setActiveTab] = useState(mode);
+  const { user, loginMutation, registerMutation } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      setLocation("/dashboard");
+    }
+  }, [user, setLocation]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login
-    setTimeout(() => setLocation("/dashboard"), 500);
+    const formData = new FormData(e.target as HTMLFormElement);
+    loginMutation.mutate({
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+    });
   };
 
   const handleSignup = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate signup
-    setTimeout(() => setLocation("/dashboard"), 500);
+    const formData = new FormData(e.target as HTMLFormElement);
+    registerMutation.mutate({
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      phone: formData.get("phone") as string,
+      username: formData.get("email") as string,
+    });
   };
 
   return (
@@ -71,13 +88,15 @@ export default function Auth() {
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input id="email" type="email" placeholder="m@example.com" required />
+                      <Input name="email" id="email" type="email" placeholder="m@example.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="password">Password</Label>
-                      <Input id="password" type="password" required />
+                      <Input name="password" id="password" type="password" required />
                     </div>
-                    <Button type="submit" className="w-full bg-primary text-white">Log In</Button>
+                    <Button type="submit" className="w-full bg-primary text-white" disabled={loginMutation.isPending}>
+                      {loginMutation.isPending ? "Logging in..." : "Log In"}
+                    </Button>
                   </form>
                 </CardContent>
                 <CardFooter className="justify-center">
@@ -94,33 +113,25 @@ export default function Auth() {
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSignup} className="space-y-4">
-                    <div className="flex justify-center mb-6">
-                      <div className="h-24 w-24 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground/50 cursor-pointer hover:bg-muted/80 transition-colors relative group overflow-hidden">
-                        <Camera className="h-8 w-8 text-muted-foreground" />
-                        <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                          Upload Photo
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input id="name" placeholder="John Doe" required />
+                      <Input name="name" id="name" placeholder="John Doe" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" placeholder="9876543210" required />
+                      <Input name="phone" id="phone" placeholder="9876543210" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="signup-email">Email</Label>
-                      <Input id="signup-email" type="email" placeholder="m@example.com" required />
+                      <Input name="email" id="signup-email" type="email" placeholder="m@example.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="signup-password">Password</Label>
-                      <Input id="signup-password" type="password" required />
+                      <Input name="password" id="signup-password" type="password" minLength={6} required />
                     </div>
-                    <Button type="submit" className="w-full bg-primary text-white">Sign Up</Button>
+                    <Button type="submit" className="w-full bg-primary text-white" disabled={registerMutation.isPending}>
+                      {registerMutation.isPending ? "Creating account..." : "Sign Up"}
+                    </Button>
                   </form>
                 </CardContent>
               </Card>

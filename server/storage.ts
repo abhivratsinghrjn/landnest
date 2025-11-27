@@ -12,6 +12,7 @@ import {
 import { db, pool } from "./db";
 import { eq, and, desc, like, or } from "drizzle-orm";
 import session from "express-session";
+import type { Store } from "express-session";
 import connectPg from "connect-pg-simple";
 
 const PostgresSessionStore = connectPg(session);
@@ -36,11 +37,11 @@ export interface IStorage {
   addPropertyImages(propertyId: number, imageUrls: string[]): Promise<PropertyImage[]>;
   getPropertyImages(propertyId: number): Promise<PropertyImage[]>;
   
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
