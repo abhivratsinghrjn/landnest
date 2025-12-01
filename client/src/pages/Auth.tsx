@@ -64,9 +64,9 @@ export default function Auth() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-6">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-6">
         <div className="w-full max-w-md">
-          <div className="mb-8 md:hidden flex justify-center">
+          <div className="mb-6 md:mb-8 md:hidden flex justify-center">
             <Link href="/">
               <img src={logoImage} alt="Logo" className="h-12 w-12" />
             </Link>
@@ -88,11 +88,11 @@ export default function Auth() {
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
-                      <Input name="email" id="email" type="email" placeholder="m@example.com" required />
+                      <Input name="email" id="email" type="email" placeholder="your@email.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="password">Password</Label>
-                      <Input name="password" id="password" type="password" required />
+                      <Input name="password" id="password" type="password" placeholder="Enter your password" required />
                     </div>
                     <Button type="submit" className="w-full bg-primary text-white" disabled={loginMutation.isPending}>
                       {loginMutation.isPending ? "Logging in..." : "Log In"}
@@ -117,19 +117,19 @@ export default function Auth() {
                   <form onSubmit={handleSignup} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
-                      <Input name="name" id="name" placeholder="John Doe" required />
+                      <Input name="name" id="name" placeholder="Enter your full name" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input name="phone" id="phone" placeholder="9876543210" required />
+                      <Input name="phone" id="phone" type="tel" placeholder="10-digit mobile number" pattern="[0-9]{10}" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="signup-email">Email</Label>
-                      <Input name="email" id="signup-email" type="email" placeholder="m@example.com" required />
+                      <Input name="email" id="signup-email" type="email" placeholder="your@email.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="signup-password">Password</Label>
-                      <Input name="password" id="signup-password" type="password" minLength={6} required />
+                      <Input name="password" id="signup-password" type="password" placeholder="Minimum 6 characters" minLength={6} required />
                     </div>
                     <Button type="submit" className="w-full bg-primary text-white" disabled={registerMutation.isPending}>
                       {registerMutation.isPending ? "Creating account..." : "Sign Up"}
