@@ -6,6 +6,7 @@ import { setupAuth } from "./auth";
 import multer from "multer";
 import { insertPropertySchema } from "@shared/schema";
 import { avatarStorage, propertyStorage } from "./cloudinary";
+import { chatWithBhoomi } from "./bhoomi";
 
 // Configure multer with Cloudinary storage
 const uploadAvatar = multer({ 
@@ -184,6 +185,22 @@ export async function registerRoutes(
       }
       
       res.sendStatus(204);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // === BHOOMI AI CHAT ===
+  app.post("/api/chat", async (req, res, next) => {
+    try {
+      const { message, conversationHistory } = req.body;
+      if (!message || typeof message !== "string") {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      const userName = req.isAuthenticated() ? (req.user as any)?.name : undefined;
+      const result = await chatWithBhoomi(message, userName, conversationHistory || []);
+      res.json(result);
     } catch (error) {
       next(error);
     }

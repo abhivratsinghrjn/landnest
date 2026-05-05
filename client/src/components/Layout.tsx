@@ -6,6 +6,7 @@ import logoImage from "@assets/generated_images/minimalist_real_estate_logo_icon
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { Bhoomi } from "@/components/Bhoomi";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -218,6 +219,9 @@ export function Layout({ children }: LayoutProps) {
           </motion.div>
         </AnimatePresence>
       </main>
+
+      {/* Bhoomi AI Chatbot */}
+      <Bhoomi />
 
       {/* Footer */}
       <footer className="bg-primary text-primary-foreground py-16 mt-20">
