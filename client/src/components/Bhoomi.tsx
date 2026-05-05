@@ -12,8 +12,8 @@ interface Message {
 }
 
 interface ConversationEntry {
-  role: "user" | "model";
-  parts: { text: string }[];
+  role: "user" | "assistant";
+  content: string;
 }
 
 // Bhoomi avatar — professional AI agent illustration (SVG, no copyright)
@@ -136,7 +136,7 @@ export function Bhoomi() {
 
     const newHistory: ConversationEntry[] = [
       ...conversationHistory,
-      { role: "user", parts: [{ text: trimmed }] },
+      { role: "user", content: trimmed },
     ];
 
     try {
@@ -159,7 +159,7 @@ export function Bhoomi() {
       setMessages((prev) => [...prev, bhoomiMsg]);
       setConversationHistory([
         ...newHistory,
-        { role: "model", parts: [{ text: data.reply }] },
+        { role: "assistant", content: data.reply },
       ]);
     } catch {
       setMessages((prev) => [
@@ -392,7 +392,7 @@ export function Bhoomi() {
                   </button>
                 </div>
                 <p className="text-center text-[10px] text-gray-400 mt-2">
-                  Powered by Gemini AI · LandNest Properties
+                  Powered by Groq AI · LandNest Properties
                 </p>
               </div>
             </motion.div>

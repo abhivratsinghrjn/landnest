@@ -1,9 +1,9 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import { storage } from "./storage";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Build a rich context string from live DB properties
+// Build rich context from live DB properties
 async function buildPropertyContext(): Promise<string> {
   try {
     const properties = await storage.getProperties();
@@ -29,7 +29,7 @@ async function buildPropertyContext(): Promise<string> {
           `Area: ${p.area} sq ft`,
           p.bedrooms ? `Bedrooms: ${p.bedrooms}` : null,
           `Status: ${p.status}`,
-          `Description: ${p.description?.slice(0, 120)}`,
+          `Description: ${p.description?.slice(0, 150)}`,
           `URL: /property/${p.id}`,
         ]
           .filter(Boolean)
@@ -41,104 +41,85 @@ async function buildPropertyContext(): Promise<string> {
   }
 }
 
-const SYSTEM_PROMPT = `You are Bhoomi, a warm, professional, and knowledgeable AI real estate assistant for LandNest Properties — a trusted real estate platform based in Rajnandgaon, Chhattisgarh, India.
+export async function chatWithBhoomi(
+  userMessage: string,
+  userName?: string,
+  conversationHistory: { role: "user" | "assistant"; content: string }[] = []
+): Promise<{ reply: string; navigate?: { url: string; label: string } }> {
+  try {
+    const propertyContext = await buildPropertyContext();
+
+    const systemPrompt = `You are Bhoomi, a warm, professional, and knowledgeable AI real estate assistant for LandNest Properties — a trusted real estate platform based in Rajnandgaon, Chhattisgarh, India.
 
 Your personality:
 - Friendly, helpful, and confident
-- Speak in a mix of English and simple Hindi when appropriate (like "ji", "bilkul", "zaroor")
+- You can use simple Hindi words occasionally (like "ji", "bilkul", "zaroor", "namaste") to feel local and warm
 - Always address the user by their name if provided
-- Be concise but thorough
+- Be concise but thorough — keep responses under 180 words
 
 Your knowledge about LandNest:
 - Platform for buying, selling, and renting properties in Rajnandgaon, Chhattisgarh
 - Offers residential, commercial, and farm/agricultural land
 - Founded by Abhivrat Singh
 - Contact: 6261642203 | businesswithabhivrat@gmail.com
-- Website pages: Home (/), Properties (/properties), About (/about), Contact (/contact), Dashboard (/dashboard), Add Property (/add-property)
+- Pages: Home (/), Properties (/properties), About (/about), Contact (/contact), Dashboard (/dashboard), Add Property (/add-property)
 
-What you can do:
-- Help users find properties matching their budget and requirements
-- Answer questions about property types, locations, prices
-- Navigate users to specific property pages
-- Explain the buying/renting process
-- Provide contact information
-- Help with account-related questions
+${userName ? `The user's name is: ${userName}` : "The user is browsing as a guest."}
 
-Navigation format: When you want to navigate the user to a property or page, include a JSON block at the END of your message like this:
+CURRENT LIVE PROPERTY LISTINGS (use ONLY these for recommendations):
+${propertyContext}
+
+Navigation instructions: When recommending a specific property or page, append a navigation tag at the very end of your response in this exact format (no spaces inside):
 [NAVIGATE:{"url":"/property/12","label":"View This Property"}]
 
-Or for page navigation:
+For page navigation:
 [NAVIGATE:{"url":"/properties?type=sale","label":"Browse Sale Properties"}]
 
 Rules:
-- Only suggest properties that exist in the current listings
-- Always mention the property ID and price when recommending
-- If no property matches, suggest contacting the team
-- Never make up property details
-- Keep responses under 200 words unless the user asks for details`;
+- Only recommend properties from the list above
+- Always mention price and location when suggesting a property
+- If no property matches the user's need, suggest contacting the team
+- Never fabricate property details`;
 
-export async function chatWithBhoomi(
-  userMessage: string,
-  userName?: string,
-  conversationHistory: { role: "user" | "model"; parts: { text: string }[] }[] = []
-): Promise<{ reply: string; navigate?: { url: string; label: string } }> {
-  try {
-    const propertyContext = await buildPropertyContext();
+    const messages: { role: "user" | "assistant" | "system"; content: string }[] = [
+      { role: "system", content: systemPrompt },
+      ...conversationHistory,
+      { role: "user", content: userMessage },
+    ];
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    const fullSystemPrompt = `${SYSTEM_PROMPT}
-
-${userName ? `The user's name is: ${userName}` : "The user is not logged in."}
-
-CURRENT LIVE PROPERTY LISTINGS:
-${propertyContext}`;
-
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: fullSystemPrompt }],
-        },
-        {
-          role: "model",
-          parts: [
-            {
-              text: `Namaste! I'm Bhoomi, your personal real estate guide at LandNest Properties. I have full access to all current listings and I'm here to help you find your perfect property in Rajnandgaon. How can I assist you today?`,
-            },
-          ],
-        },
-        ...conversationHistory,
-      ],
-      generationConfig: {
-        maxOutputTokens: 500,
-        temperature: 0.7,
-      },
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages,
+      max_tokens: 400,
+      temperature: 0.7,
     });
 
-    const result = await chat.sendMessage(userMessage);
-    const rawReply = result.response.text();
+    const rawReply = completion.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response. Please try again.";
 
     // Extract navigation command if present
-    const navMatch = rawReply.match(/\[NAVIGATE:(\{.*?\})\]/);
+    const navMatch = rawReply.match(/\[NAVIGATE:(\{[^}]+\})\]/);
     let navigate: { url: string; label: string } | undefined;
     let reply = rawReply;
 
     if (navMatch) {
       try {
         navigate = JSON.parse(navMatch[1]);
-        reply = rawReply.replace(/\[NAVIGATE:\{.*?\}\]/, "").trim();
+        reply = rawReply.replace(/\[NAVIGATE:\{[^}]+\}\]/, "").trim();
       } catch {
-        // ignore parse error
+        // ignore parse error, keep full reply
       }
     }
 
     return { reply, navigate };
   } catch (error: any) {
-    console.error("Bhoomi AI error:", error);
-    return {
-      reply:
-        "I'm sorry, I'm having a little trouble right now. Please try again in a moment, or contact us directly at 6261642203.",
-    };
+    console.error("Bhoomi AI error:", error?.message || error);
+
+    if (error?.message?.includes("429") || error?.message?.includes("rate limit")) {
+      return { reply: "I'm a little busy right now — please try again in a moment! Or reach us at 6261642203." };
+    }
+    if (error?.message?.includes("401") || error?.message?.includes("API key")) {
+      return { reply: "My AI service isn't configured correctly. Please contact the site admin." };
+    }
+    return { reply: "Something went wrong on my end. Please try again or contact us at 6261642203." };
   }
 }
