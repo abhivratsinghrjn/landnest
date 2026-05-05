@@ -48,7 +48,7 @@ export default function Auth() {
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Left Side - Image */}
       <div className="hidden md:block w-1/2 bg-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-151358468e774-c2796d71eb28?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-50 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')" }} />
         <div className="relative z-10 p-12 text-white h-full flex flex-col justify-between">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
@@ -59,6 +59,18 @@ export default function Auth() {
           <div>
             <h1 className="text-5xl font-display font-bold mb-4">Welcome Home.</h1>
             <p className="text-xl opacity-80 max-w-md">Join our community to find, list, and explore the best properties in the region.</p>
+            <div className="mt-10 grid grid-cols-3 gap-6">
+              {[
+                { value: "500+", label: "Properties Listed" },
+                { value: "200+", label: "Happy Families" },
+                { value: "10+", label: "Years Experience" },
+              ].map(({ value, label }) => (
+                <div key={label} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                  <p className="text-2xl font-bold">{value}</p>
+                  <p className="text-sm opacity-70 mt-1">{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
