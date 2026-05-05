@@ -10,7 +10,7 @@ import {
   propertyImages 
 } from "@shared/schema";
 import { db, pool } from "./db";
-import { eq, and, desc, like, or } from "drizzle-orm";
+import { eq, and, desc, like, or, sql } from "drizzle-orm";
 import session from "express-session";
 import type { Store } from "express-session";
 import connectPg from "connect-pg-simple";
@@ -37,6 +37,15 @@ export interface IStorage {
   addPropertyImages(propertyId: number, imageUrls: string[]): Promise<PropertyImage[]>;
   getPropertyImages(propertyId: number): Promise<PropertyImage[]>;
   
+  // Admin methods
+  getAllUsers(): Promise<User[]>;
+  getAllPropertiesAdmin(): Promise<(Property & { images: PropertyImage[] })[]>;
+  adminUpdateProperty(id: number, updates: Partial<Property>): Promise<Property | undefined>;
+  adminDeleteProperty(id: number): Promise<boolean>;
+  adminUpdateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
+  adminDeleteUser(id: string): Promise<boolean>;
+  getStats(): Promise<{ totalUsers: number; totalProperties: number; activeProperties: number; soldProperties: number }>;
+
   sessionStore: Store;
 }
 
@@ -202,6 +211,65 @@ export class DatabaseStorage implements IStorage {
       .orderBy(propertyImages.order);
     
     return images;
+  }
+
+  // ===== ADMIN METHODS =====
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async getAllPropertiesAdmin(): Promise<(Property & { images: PropertyImage[] })[]> {
+    const propertyList = await db
+      .select()
+      .from(properties)
+      .orderBy(desc(properties.createdAt));
+
+    return Promise.all(
+      propertyList.map(async (p) => ({ ...p, images: await this.getPropertyImages(p.id) }))
+    );
+  }
+
+  async adminUpdateProperty(id: number, updates: Partial<Property>): Promise<Property | undefined> {
+    const [property] = await db
+      .update(properties)
+      .set(updates)
+      .where(eq(properties.id, id))
+      .returning();
+    return property || undefined;
+  }
+
+  async adminDeleteProperty(id: number): Promise<boolean> {
+    const result = await db.delete(properties).where(eq(properties.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async adminUpdateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async adminDeleteUser(id: string): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id)).returning();
+    return result.length > 0;
+  }
+
+  async getStats(): Promise<{ totalUsers: number; totalProperties: number; activeProperties: number; soldProperties: number }> {
+    const [totalUsers] = await db.select({ count: sql`count(*)` }).from(users);
+    const [totalProperties] = await db.select({ count: sql`count(*)` }).from(properties);
+    const [activeProperties] = await db.select({ count: sql`count(*)` }).from(properties).where(eq(properties.status, 'active'));
+    const [soldProperties] = await db.select({ count: sql`count(*)` }).from(properties).where(eq(properties.status, 'sold'));
+
+    return {
+      totalUsers: Number((totalUsers as any).count),
+      totalProperties: Number((totalProperties as any).count),
+      activeProperties: Number((activeProperties as any).count),
+      soldProperties: Number((soldProperties as any).count),
+    };
   }
 }
 

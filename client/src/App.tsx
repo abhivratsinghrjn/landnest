@@ -14,6 +14,7 @@ import Auth from "@/pages/Auth";
 import Dashboard from "@/pages/Dashboard";
 import AddProperty from "@/pages/AddProperty";
 import ForgotPassword from "@/pages/ForgotPassword";
+import Admin from "@/pages/Admin";
 
 function Router() {
   return (
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/add-property" component={AddProperty} />
       <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

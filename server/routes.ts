@@ -206,5 +206,77 @@ export async function registerRoutes(
     }
   });
 
+  // === ADMIN ROUTES ===
+  function isAdmin(req: any, res: any, next: any) {
+    if (req.isAuthenticated() && (req.user as any).role === 'admin') return next();
+    res.status(403).json({ error: 'Forbidden' });
+  }
+
+  // Stats
+  app.get("/api/admin/stats", isAdmin, async (req, res, next) => {
+    try {
+      const stats = await storage.getStats();
+      res.json(stats);
+    } catch (error) { next(error); }
+  });
+
+  // All users
+  app.get("/api/admin/users", isAdmin, async (req, res, next) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      res.json(allUsers);
+    } catch (error) { next(error); }
+  });
+
+  // Update user (role, ban, etc.)
+  app.patch("/api/admin/users/:id", isAdmin, async (req, res, next) => {
+    try {
+      const updated = await storage.adminUpdateUser(req.params.id, req.body);
+      if (!updated) return res.status(404).json({ error: 'User not found' });
+      res.json(updated);
+    } catch (error) { next(error); }
+  });
+
+  // Delete user
+  app.delete("/api/admin/users/:id", isAdmin, async (req, res, next) => {
+    try {
+      // Prevent deleting yourself
+      if (req.params.id === (req.user as any).id) {
+        return res.status(400).json({ error: 'Cannot delete your own account' });
+      }
+      const deleted = await storage.adminDeleteUser(req.params.id);
+      if (!deleted) return res.status(404).json({ error: 'User not found' });
+      res.sendStatus(204);
+    } catch (error) { next(error); }
+  });
+
+  // All properties (including inactive/sold)
+  app.get("/api/admin/properties", isAdmin, async (req, res, next) => {
+    try {
+      const allProperties = await storage.getAllPropertiesAdmin();
+      res.json(allProperties);
+    } catch (error) { next(error); }
+  });
+
+  // Admin update any property
+  app.patch("/api/admin/properties/:id", isAdmin, async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.adminUpdateProperty(id, req.body);
+      if (!updated) return res.status(404).json({ error: 'Property not found' });
+      res.json(updated);
+    } catch (error) { next(error); }
+  });
+
+  // Admin delete any property
+  app.delete("/api/admin/properties/:id", isAdmin, async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const deleted = await storage.adminDeleteProperty(id);
+      if (!deleted) return res.status(404).json({ error: 'Property not found' });
+      res.sendStatus(204);
+    } catch (error) { next(error); }
+  });
+
   return httpServer;
 }
