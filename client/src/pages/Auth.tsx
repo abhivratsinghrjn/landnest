@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Camera, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import logoImage from "@assets/generated_images/minimalist_real_estate_logo_icon.png";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -46,33 +46,49 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      {/* Left Side - Image */}
-      <div className="hidden md:block w-1/2 bg-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')" }} />
-        <div className="relative z-10 p-12 text-white h-full flex flex-col justify-between">
-          <Link href="/">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <img src={logoImage} alt="Logo" className="h-10 w-10 brightness-0 invert" />
-              <span className="font-display font-bold text-2xl">LandNest</span>
-            </div>
-          </Link>
+      {/* Left Side - Clean card design, no background image */}
+      <div className="hidden md:flex w-1/2 bg-primary flex-col justify-between p-12">
+        {/* Logo with actual favicon image */}
+        <Link href="/">
+          <div className="flex items-center gap-3 cursor-pointer group">
+            <img src={logoImage} alt="LandNest Logo" className="h-10 w-10 object-contain" />
+            <span className="font-display font-bold text-2xl text-white">LandNest</span>
+          </div>
+        </Link>
+
+        {/* Center content */}
+        <div className="flex flex-col gap-6">
           <div>
-            <h1 className="text-5xl font-display font-bold mb-4">Welcome Home.</h1>
-            <p className="text-xl opacity-80 max-w-md">Join our community to find, list, and explore the best properties in the region.</p>
-            <div className="mt-10 grid grid-cols-3 gap-6">
-              {[
-                { value: "500+", label: "Properties Listed" },
-                { value: "200+", label: "Happy Families" },
-                { value: "10+", label: "Years Experience" },
-              ].map(({ value, label }) => (
-                <div key={label} className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                  <p className="text-2xl font-bold">{value}</p>
-                  <p className="text-sm opacity-70 mt-1">{label}</p>
+            <h1 className="text-5xl font-display font-bold text-white mb-4 leading-tight">
+              Find Your<br />Perfect Nest.
+            </h1>
+            <p className="text-white/70 text-lg max-w-sm leading-relaxed">
+              Rajnandgaon's most trusted platform for buying, selling, and renting properties.
+            </p>
+          </div>
+
+          {/* Feature cards */}
+          <div className="flex flex-col gap-3 mt-2">
+            {[
+              { icon: "🏡", title: "Verified Listings", desc: "Every property personally verified" },
+              { icon: "📍", title: "Local Expertise", desc: "Deep roots in Rajnandgaon & Chhattisgarh" },
+              { icon: "🤝", title: "Trusted by Families", desc: "Helping families find their dream home" },
+            ].map(({ icon, title, desc }) => (
+              <div key={title} className="flex items-center gap-4 bg-white/10 rounded-xl px-4 py-3 backdrop-blur-sm">
+                <span className="text-2xl">{icon}</span>
+                <div>
+                  <p className="text-white font-semibold text-sm">{title}</p>
+                  <p className="text-white/60 text-xs">{desc}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        {/* Footer tagline */}
+        <p className="text-white/40 text-sm">
+          © 2025 LandNest Properties · Rajnandgaon, CG
+        </p>
       </div>
 
       {/* Right Side - Form */}
