@@ -80,6 +80,10 @@ export const insertPropertySchema = createInsertSchema(properties).omit({
 }).extend({
   coordinatesLat: z.string(),
   coordinatesLng: z.string(),
+  bedrooms: z.number().nullable().optional(),
+  subtype: z.string().nullable().optional(),
+  status: z.string().optional().default("active"),
+  featured: z.boolean().optional().default(false),
 });
 
 export const insertPropertyImageSchema = createInsertSchema(propertyImages).omit({

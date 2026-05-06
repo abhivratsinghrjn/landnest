@@ -132,10 +132,27 @@ export async function registerRoutes(
   app.post("/api/properties", isAuthenticated, uploadPropertyImages.array('images', 10), async (req, res, next) => {
     try {
       const userId = req.user!.id;
-      const propertyData = JSON.parse(req.body.propertyData);
+      
+      // Parse property data
+      let propertyData;
+      try {
+        propertyData = JSON.parse(req.body.propertyData);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        return res.status(400).json({ error: 'Invalid property data format' });
+      }
       
       // Validate property data
-      const validatedData = insertPropertySchema.parse(propertyData);
+      let validatedData;
+      try {
+        validatedData = insertPropertySchema.parse(propertyData);
+      } catch (validationError: any) {
+        console.error('Validation error:', validationError);
+        return res.status(400).json({ 
+          error: 'Validation failed', 
+          details: validationError.errors || validationError.message 
+        });
+      }
       
       // Create property
       const property = await storage.createProperty(userId, validatedData);
@@ -149,8 +166,9 @@ export async function registerRoutes(
       // Return property with images
       const propertyWithImages = await storage.getProperty(property.id);
       res.status(201).json(propertyWithImages);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      console.error('Property creation error:', error);
+      res.status(500).json({ error: error.message || 'Internal server error' });
     }
   });
 

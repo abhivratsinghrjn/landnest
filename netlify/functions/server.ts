@@ -2,20 +2,16 @@ import 'dotenv/config';
 import serverless from 'serverless-http';
 import express from 'express';
 import { registerRoutes } from '../../server/routes';
-import { setupAuth } from '../../server/auth';
+import { storage } from '../../server/storage';
 import session from 'express-session';
 import passport from 'passport';
-import { storage } from '../../server/storage';
 
-// Verify environment variables are loaded
 if (!process.env.DATABASE_URL) {
-  console.error('DATABASE_URL is not set!');
   throw new Error('DATABASE_URL must be set. Check Netlify environment variables.');
 }
 
 const app = express();
 
-// Middleware
 app.use(express.json({
   verify: (req: any, _res, buf) => {
     req.rawBody = buf;
@@ -23,17 +19,16 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: false }));
 
-// Session configuration for serverless
 const sessionSettings: session.SessionOptions = {
   secret: process.env.SESSION_SECRET || "landnest-secret-key-change-in-production",
   resave: false,
   saveUninitialized: false,
   store: storage.sessionStore,
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    maxAge: 1000 * 60 * 60 * 24 * 7,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
-  }
+    sameSite: 'lax',
+  },
 };
 
 app.set("trust proxy", 1);
@@ -41,18 +36,17 @@ app.use(session(sessionSettings));
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Setup authentication
-setupAuth(app);
-
-// Register routes
+// Register all routes (auth is set up inside registerRoutes)
 const httpServer = { listen: () => {} } as any;
 registerRoutes(httpServer, app);
 
-// Error handler
 app.use((err: any, _req: any, res: any, _next: any) => {
+  console.error('Server error:', err);
   const status = err.status || err.statusCode || 500;
   const message = err.message || "Internal Server Error";
   res.status(status).json({ message });
 });
 
-export const handler = serverless(app);
+export const handler = serverless(app, {
+  binary: ['image/*', 'multipart/form-data'],
+});

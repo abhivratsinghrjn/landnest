@@ -104,7 +104,7 @@ export default function AddProperty() {
     const propertyData = {
       type: formData.type,
       category: formData.category,
-      subtype: formData.subtype,
+      subtype: formData.subtype || null,
       title: formData.title,
       description: formData.description,
       price: parseInt(formData.price),
@@ -116,7 +116,7 @@ export default function AddProperty() {
       contactName: formData.contactName,
       contactEmail: formData.contactEmail,
       contactPhone: formData.contactPhone,
-      status: "active",
+      status: "active" as const,
       featured: false,
     };
 
@@ -325,7 +325,18 @@ export default function AddProperty() {
 
             {/* Section 4: Location */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold border-b pb-2">Location Pin</h3>
+              <h3 className="text-xl font-semibold border-b pb-2">Location</h3>
+              
+              <div className="space-y-2">
+                <Label>Address / Location</Label>
+                <Input 
+                  placeholder="e.g. Civil Lines, Rajnandgaon, Chhattisgarh" 
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  required
+                />
+              </div>
+
               <p className="text-sm text-muted-foreground">Drag the map to pin the exact location of the property.</p>
               
               <div className="h-[300px] rounded-xl overflow-hidden border border-border relative">
