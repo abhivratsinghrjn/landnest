@@ -7,6 +7,7 @@ import multer from "multer";
 import { insertPropertySchema } from "@shared/schema";
 import { avatarStorage, propertyStorage } from "./cloudinary";
 import { chatWithBhoomi } from "./bhoomi";
+import { predictPropertyGrowth } from "./prediction";
 
 // Configure multer with Cloudinary storage
 const uploadAvatar = multer({ 
@@ -112,6 +113,28 @@ export async function registerRoutes(
       }
       
       res.json(property);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  // Property growth forecast (only for sale/farm)
+  app.get("/api/properties/:id/forecast", async (req, res, next) => {
+    try {
+      const id = parseInt(req.params.id);
+      const property = await storage.getProperty(id);
+      if (!property) return res.status(404).json({ error: "Property not found" });
+      if (property.type === "rent") return res.status(400).json({ error: "Forecast not available for rental properties" });
+
+      const forecast = predictPropertyGrowth({
+        price: property.price,
+        area: property.area,
+        category: property.category,
+        type: property.type,
+        location: property.location,
+      });
+
+      res.json(forecast);
     } catch (error) {
       next(error);
     }

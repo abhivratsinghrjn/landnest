@@ -9,6 +9,7 @@ import { MapPin, Bed, Maximize, Calendar, Share2, Heart, Phone, Mail, X, Loader2
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { getProperty } from "@/lib/api";
+import { PropertyForecast } from "@/components/PropertyForecast";
 
 export default function PropertyDetails() {
   const [match, params] = useRoute("/property/:id");
@@ -246,6 +247,9 @@ export default function PropertyDetails() {
                 <Share2 className="h-5 w-5 md:h-6 md:w-6" />
               </Button>
             </div>
+
+            {/* Value Growth Forecast — only for sale/farm */}
+            <PropertyForecast propertyId={parseInt(id!)} propertyType={property.type} />
           </div>
 
           {/* Right Column: Map & Contact */}
